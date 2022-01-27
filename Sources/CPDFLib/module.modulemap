@@ -1,0 +1,7 @@
+
+
+module CPDFLib [system] {
+  header "shim.h"
+  link "pdf"
+  export *
+}
