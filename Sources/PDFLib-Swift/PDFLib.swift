@@ -66,7 +66,7 @@ open class PDF
     
     // Text
     
-    public func fitTextLine (text:String, len:Int32 = 0, x:Double, y:Double, options:String) {
+    public func fitTextLine (text:String, len:Int32 = 0, x:Double, y:Double, options:String = "") {
         PDF_fit_textline( pdf, text.cString(using: .utf8), len, x, y, options.cString(using: .utf8) )
     }
     
