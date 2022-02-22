@@ -200,7 +200,7 @@ final class PDFLib_SwiftTests: XCTestCase {
             opts = "header=1 rowheightdefault=auto fill={{area=rowodd fillcolor={gray 0.9}}} stroke={{line=other}}"
             
             /* Place the table instance */
-            result = try pdf.fitTable(table: tbl, llx: llx, lly: lly, urx: urx, ury: ury, options: opts)
+            result = try pdf.fitTable(table: tbl, llx: llx, lly: lly, urx: urx, ury: ury, options: opts)            
 
             pdf.endPage()
         }
@@ -229,6 +229,71 @@ final class PDFLib_SwiftTests: XCTestCase {
         /* This will also delete Textflow handles used in the table */
         pdf.deleteTable(table: tbl)
 
+        pdf.endDocument()
+    }
+    
+    func testFontMetrics() throws {
+ 
+        print("Executing at: \(FileManager().currentDirectoryPath)")
+        
+        let pdf = PDF()
+                
+        pdf.setOptions( "SearchPath={{\(searchPath)}}" )
+        
+        try pdf.beginDocument( fileName: "font_metrics_info.pdf" )
+        
+        pdf.setInfo( key: "Creator", value: "PDFlib Cookbook" )
+        pdf.setInfo( key: "Title",  value: "Font Metrics Info" )
+        
+        /* Start page */
+        pdf.beginPage(options: "width=300 height=200")
+        let font = try pdf.loadFont(name: "NotoSerif-Regular", encoding: "winansi", options: "embedding")
+
+        
+        /* Retrieve the font metrics for a font size of 10. If no fontsize
+         * is supplied the metrics will be based on a font size of 1000.
+         */
+        let capheight  = pdf.infoFont( font, keyword: "capheight", options: "fontsize=10" )
+        let ascender   = pdf.infoFont( font, keyword: "ascender", options: "fontsize=10" )
+        let descender  = pdf.infoFont( font, keyword: "descender", options: "fontsize=10" )
+        let xheight    = pdf.infoFont( font, keyword: "xheight", options: "fontsize=10" )
+
+        pdf.setFont(font, size: 10)
+        
+        let text = "ABCdefghij"
+        let x:Double = 150
+        var y:Double = 140
+        
+        pdf.fitTextLine(text: "capheight for font size 10: " + String(format: "%.2f", capheight), x: x, y: y, options: "alignchar :")
+                             
+        var optlist = "matchbox={fillcolor={rgb 1 0.8 0.8} boxheight={capheight none}}"
+        pdf.fitTextLine( text: text, x: x + 60, y: y, options: optlist)
+
+        y -= 30
+        pdf.fitTextLine( text: "ascender for font size 10: " + String( format: "%.2f", ascender), x: x, y: y, options: "alignchar :")
+               
+        optlist = "matchbox={fillcolor={rgb 1 0.8 0.8} boxheight={ascender none}}"
+        pdf.fitTextLine( text: text, x: x + 60, y: y, options: optlist)
+
+        y -= 30
+        pdf.fitTextLine( text: "descender for font size 10: " + String( format:"%.2f", descender), x: x, y: y, options: "alignchar :")
+        
+        optlist = "matchbox={fillcolor={rgb 1 0.8 0.8} boxheight={none descender}}"
+        pdf.fitTextLine( text: text, x: x + 60, y: y, options: optlist)
+
+        y -= 30
+        pdf.fitTextLine( text: "xheight for font size 10: " + String( format: "%.1f", xheight), x: x, y: y, options: "alignchar :")
+        
+        optlist = "matchbox={fillcolor={rgb 1 0.8 0.8} boxheight={xheight none}}"
+        pdf.fitTextLine( text: text, x: x + 60, y: y, options: optlist)
+
+        y -= 30
+        let width = pdf.stringWidth(text, font: font, size: 10)
+        pdf.fitTextLine( text: "width for font size 10: " + String( format: "%.1f", width), x: x, y: y, options: "alignchar :")
+
+        
+        /* Finish page */
+        pdf.endPage()
         pdf.endDocument()
     }
 }

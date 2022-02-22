@@ -1,5 +1,6 @@
 import Foundation
 import CPDFLib
+import MIOCore
 
 
 public enum PDFError : Error {
@@ -35,7 +36,8 @@ open class PDF
         PDF_set_option( pdf, options.cString(using: .utf8) )
     }
     
-
+    // Fonts
+    
     public func loadFont(name:String, len:Int32 = 0, encoding:String, options:String = "") throws -> Int32 {
         let font = PDF_load_font(pdf, name.cString(using: .utf8), len, encoding.cString(using: .utf8), options.cString(using: .utf8))
         
@@ -45,9 +47,23 @@ open class PDF
 
     }
     
-    public func beginDocument(fileName:String?) throws {
-        
-        if (PDF_begin_document( pdf, fileName != nil ? fileName!.cString(using: .utf8) : empty_string, 0, empty_string ) == -1) {
+    public func infoFont( _ font: Int32, keyword:String, options:String = "") -> Double {
+        return PDF_info_font(pdf, font, keyword.cString(using: .utf8), options)
+    }
+    
+    public func setFont( _ font:Int32, size:Double) {
+        PDF_setfont(pdf, font, size)
+    }
+    
+    public func stringWidth( _ text: String, font: Int32, size: Double) -> Double {
+        return PDF_stringwidth2(pdf, text.cString(using: .utf8), 0, font, size)
+    }
+    
+    // document
+    
+    public func beginDocument(fileName:String = "") throws {
+                
+        if (PDF_begin_document( pdf, fileName.cString(using: .utf8), 0, empty_string ) == -1) {
             throw PDFError.error(pdf)
         }
     }
@@ -64,6 +80,12 @@ open class PDF
         PDF_end_page_ext(pdf, empty_string)
     }
     
+    public func pdfData () -> Data {
+        var len:Int = 0
+        let data = UnsafePointer<CChar> ( PDF_get_buffer(pdf, &len) )!
+        return Data(bytes: data, count: len)
+    }
+    
     // Text
     
     public func fitTextLine (text:String, len:Int32 = 0, x:Double, y:Double, options:String = "") {
@@ -75,13 +97,19 @@ open class PDF
         if tf == -1 { throw PDFError.error(pdf) }
         return tf
     }
-    
-    // Draw primitives
+
+    // Color
     
     public func setColor (fstype:String, colorspace:String, c1:Double = 0.0, c2:Double = 0.0, c3: Double = 0.0, c4:Double = 0.0) {
         PDF_setcolor(pdf, fstype.cString(using: .utf8), colorspace.cString(using: .utf8), c1, c2, c3, c4)
     }
     
+    public func setGraphicOptions(_ options:String = "") {
+        PDF_set_graphics_option(pdf, options.cString(using: .utf8))
+    }
+
+    // Draw primitives
+                                                            
     public func rect (x:Double, y:Double, width:Double, height:Double) {
         PDF_rect(pdf, x, y, width, height)
     }
@@ -151,4 +179,9 @@ open class PDF
         PDF_delete_table(pdf, table, options)
     }
         
+}
+
+extension PDF
+{
+    public static var A4 : MCSize { return MCSize( width: Float( a4_width ), height: Float( a4_height ) ) }
 }
