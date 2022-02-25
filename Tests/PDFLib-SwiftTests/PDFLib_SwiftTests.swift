@@ -17,7 +17,8 @@ final class PDFLib_SwiftTests: XCTestCase {
         
         let pdf = PDF()
                 
-        pdf.setOptions("SearchPath={{\(searchPath)}}")
+//        pdf.setOptions("SearchPath={{\(searchPath)}}")
+        pdf.setParameter(key: "SearchPath", value: searchPath)
         
         try pdf.beginDocument( fileName: "starter_basic.pdf" )
         
@@ -36,11 +37,11 @@ final class PDFLib_SwiftTests: XCTestCase {
         var opts = "fontname={NotoSerif-Regular} encoding=unicode embedding fontsize=24 textformat=utf8"
         
         /* using plain ASCII text */
-        pdf.fitTextLine(text: "en: Hello!", x: 50, y: 700, options: opts)
+        try pdf.fitTextLine(text: "en: Hello!", x: 50, y: 700, options: opts)
         
         /* using PDFlib's character references */
         opts = "fontname={NotoSerif-Regular} encoding=unicode embedding fontsize=24 textformat=utf8 charref=true"
-        pdf.fitTextLine(text: "es: &#xA1;Hola!", x: 50, y: 550, options: opts)
+        try pdf.fitTextLine(text: "es: &#xA1;Hola!", x: 50, y: 550, options: opts)
         
         pdf.fitImage(image: image, options: "scale=0.25")
         
@@ -92,7 +93,8 @@ final class PDFLib_SwiftTests: XCTestCase {
         
         let pdf = PDF()
                 
-        pdf.setOptions( "SearchPath={{\(searchPath)}}" )
+//        pdf.setOptions( "SearchPath={{\(searchPath)}}" )
+        pdf.setParameter(key: "SearchPath", value: searchPath)
         
         try pdf.beginDocument( fileName: "starter_table.pdf" )
         
@@ -238,7 +240,8 @@ final class PDFLib_SwiftTests: XCTestCase {
         
         let pdf = PDF()
                 
-        pdf.setOptions( "SearchPath={{\(searchPath)}}" )
+//        pdf.setOptions( "SearchPath={{\(searchPath)}}" )
+        pdf.setParameter(key: "SearchPath", value: searchPath)
         
         try pdf.beginDocument( fileName: "font_metrics_info.pdf" )
         
@@ -264,32 +267,32 @@ final class PDFLib_SwiftTests: XCTestCase {
         let x:Double = 150
         var y:Double = 140
         
-        pdf.fitTextLine(text: "capheight for font size 10: " + String(format: "%.2f", capheight), x: x, y: y, options: "alignchar :")
+        try pdf.fitTextLine(text: "capheight for font size 10: " + String(format: "%.2f", capheight), x: x, y: y, options: "alignchar :")
                              
         var optlist = "matchbox={fillcolor={rgb 1 0.8 0.8} boxheight={capheight none}}"
-        pdf.fitTextLine( text: text, x: x + 60, y: y, options: optlist)
+        try pdf.fitTextLine( text: text, x: x + 60, y: y, options: optlist)
 
         y -= 30
-        pdf.fitTextLine( text: "ascender for font size 10: " + String( format: "%.2f", ascender), x: x, y: y, options: "alignchar :")
+        try pdf.fitTextLine( text: "ascender for font size 10: " + String( format: "%.2f", ascender), x: x, y: y, options: "alignchar :")
                
         optlist = "matchbox={fillcolor={rgb 1 0.8 0.8} boxheight={ascender none}}"
-        pdf.fitTextLine( text: text, x: x + 60, y: y, options: optlist)
+        try pdf.fitTextLine( text: text, x: x + 60, y: y, options: optlist)
 
         y -= 30
-        pdf.fitTextLine( text: "descender for font size 10: " + String( format:"%.2f", descender), x: x, y: y, options: "alignchar :")
+        try pdf.fitTextLine( text: "descender for font size 10: " + String( format:"%.2f", descender), x: x, y: y, options: "alignchar :")
         
         optlist = "matchbox={fillcolor={rgb 1 0.8 0.8} boxheight={none descender}}"
-        pdf.fitTextLine( text: text, x: x + 60, y: y, options: optlist)
+        try pdf.fitTextLine( text: text, x: x + 60, y: y, options: optlist)
 
         y -= 30
-        pdf.fitTextLine( text: "xheight for font size 10: " + String( format: "%.1f", xheight), x: x, y: y, options: "alignchar :")
+        try pdf.fitTextLine( text: "xheight for font size 10: " + String( format: "%.1f", xheight), x: x, y: y, options: "alignchar :")
         
         optlist = "matchbox={fillcolor={rgb 1 0.8 0.8} boxheight={xheight none}}"
-        pdf.fitTextLine( text: text, x: x + 60, y: y, options: optlist)
+        try pdf.fitTextLine( text: text, x: x + 60, y: y, options: optlist)
 
         y -= 30
         let width = pdf.stringWidth(text, font: font, size: 10)
-        pdf.fitTextLine( text: "width for font size 10: " + String( format: "%.1f", width), x: x, y: y, options: "alignchar :")
+        try pdf.fitTextLine( text: "width for font size 10: " + String( format: "%.1f", width), x: x, y: y, options: "alignchar :")
 
         
         /* Finish page */

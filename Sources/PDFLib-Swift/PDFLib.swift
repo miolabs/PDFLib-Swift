@@ -28,12 +28,26 @@ open class PDF
         PDF_delete(pdf)
     }
     
+    typealias block = () -> Void
+    func pdf_try( block: @escaping block ) throws {
+        if PDF_CHECK_TRY(pdf) {
+            block()
+        }
+        if PDF_CHECK_CATCH(pdf){
+            throw PDFError.error(pdf)
+        }
+    }
+    
     public func setInfo(key:String, value:String) {
         PDF_set_info(pdf, key.cString(using: .utf8), value.cString(using: .utf8))        
     }
     
-    public func setOptions( _ options:String) {
-        PDF_set_option( pdf, options.cString(using: .utf8) )
+//    public func setOptions( _ options:String) {
+//        PDF_set_option( pdf, options.cString(using: .utf8) )
+//    }
+    
+    public func setParameter(key:String, value:String) {
+        PDF_set_parameter(pdf, key.cString(using: .utf8), value.cString(using: .utf8))
     }
     
     // Fonts
@@ -88,8 +102,10 @@ open class PDF
     
     // Text
     
-    public func fitTextLine (text:String, len:Int32 = 0, x:Double, y:Double, options:String = "") {
-        PDF_fit_textline( pdf, text.cString(using: .utf8), len, x, y, options.cString(using: .utf8) )
+    public func fitTextLine (text:String, len:Int32 = 0, x:Double, y:Double, options:String = "") throws {
+        try pdf_try {
+            PDF_fit_textline( self.pdf, text.cString(using: .utf8), len, x, y, options.cString(using: .utf8) )
+        }
     }
     
     public func addTextFlow(textFlow:Int32, text:String, len:Int32 = 0, options:String = "") throws -> Int32 {
@@ -104,9 +120,9 @@ open class PDF
         PDF_setcolor(pdf, fstype.cString(using: .utf8), colorspace.cString(using: .utf8), c1, c2, c3, c4)
     }
     
-    public func setGraphicOptions(_ options:String = "") {
-        PDF_set_graphics_option(pdf, options.cString(using: .utf8))
-    }
+//    public func setGraphicOptions(_ options:String = "") {
+//        PDF_set_graphics_option(pdf, options.cString(using: .utf8))
+//    }
 
     // Draw primitives
                                                             
