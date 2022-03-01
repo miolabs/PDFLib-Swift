@@ -73,6 +73,10 @@ open class PDF
         return PDF_stringwidth2(pdf, text.cString(using: .utf8), 0, font, size)
     }
     
+    public func infoFont( font: Int32, key:String, options:String = "") -> Double {
+        return PDF_info_font(pdf, font, key.cString(using: .utf8), options)
+    }
+    
     // document
     
     public func beginDocument(fileName:String = "") throws {
