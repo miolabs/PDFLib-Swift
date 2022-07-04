@@ -168,7 +168,7 @@ open class PDF
         return image
         
     }
-    
+        
     public func fitImage(image:Int32, x:Double = 0, y: Double = 0, options:String = "") {
         PDF_fit_image(pdf, image, x, y, options.cString(using: .utf8))
     }
@@ -180,6 +180,8 @@ open class PDF
     // Tables
     
     public func fitTable(table:Int32, llx:Double, lly:Double, urx:Double, ury:Double, options:String = "") throws -> String {
+        defer { deleteTable(table: table) }
+        
         guard let r = PDF_fit_table(pdf, table, llx, lly, urx, ury, options.cString(using: .utf8)) else {
             throw PDFError.error(pdf)
         }
