@@ -108,12 +108,12 @@ open class PDF
     
     public func fitTextLine (text:String, len:Int32 = 0, x:Double, y:Double, options:String = "") throws {
         try pdf_try {
-            PDF_fit_textline( self.pdf, text.cString(using: .utf8), len, x, y, options.cString(using: .utf8) )
+            PDF_fit_textline( self.pdf, text.cString(using: .isoLatin1), len, x, y, options.cString(using: .utf8) )
         }
     }
     
     public func addTextFlow(textFlow:Int32, text:String, len:Int32 = 0, options:String = "") throws -> Int32 {
-        let tf = PDF_add_textflow(pdf, textFlow, text.cString(using: .utf8), len, options.cString(using: .utf8))
+        let tf = PDF_add_textflow(pdf, textFlow, text.cString(using: .isoLatin1), len, options.cString(using: .utf8))
         if tf == -1 { throw PDFError.error(pdf) }
         return tf
     }
@@ -175,6 +175,15 @@ open class PDF
     
     public func closeImage(image:Int32) {
         PDF_close_image( pdf, image )
+    }
+    
+    // Virtual FS
+        
+    public func createPVF( filename:String, data:Data) {
+        var bytes = [UInt8](repeating: 0, count: data.count)
+        data.copyBytes(to: &bytes, count: data.count)
+        
+        PDF_create_pvf( pdf, filename.cString(using: .utf8), 0, &bytes, data.count, "")
     }
     
     // Tables
