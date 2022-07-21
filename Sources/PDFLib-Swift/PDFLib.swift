@@ -10,7 +10,9 @@ public enum PDFError : Error {
 extension PDFError: LocalizedError {
     public var errorDescription: String? {
         switch self {
-        case let .error(pdf): return "[PDFError] \(String(describing: PDF_get_errmsg(pdf)))"
+        case let .error(pdf):
+            let err = String( cString: PDF_get_errmsg(pdf) )
+            return "[PDFError] \(err))"
         }
     }
 }
