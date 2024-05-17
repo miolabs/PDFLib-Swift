@@ -5,6 +5,7 @@ import MIOCore
 
 public enum PDFError : Error {
     case error(_ pdf:OpaquePointer!)
+    case invalidConversion( _ reason: String )
 }
 
 extension PDFError: LocalizedError {
@@ -13,6 +14,8 @@ extension PDFError: LocalizedError {
         case let .error(pdf):
             let err = String( cString: PDF_get_errmsg(pdf) )
             return "[PDFError] \(err))"
+        case let .invalidConversion( reason ):
+            return "[PDFError] \(reason))"
         }
     }
 }
@@ -47,10 +50,16 @@ open class PDF
 //    public func setOptions( _ options:String) {
 //        PDF_set_option( pdf, options.cString(using: .utf8) )
 //    }
-    
+
+#if PDFLIB_7
     public func setParameter(key:String, value:String) {
         PDF_set_parameter(pdf, key.cString(using: .utf8), value.cString(using: .utf8))
     }
+#else
+    public func setOption( options:String ) {
+        PDF_set_option( pdf, options.cString( using: .utf8 ) )
+    }    
+#endif
     
     // Fonts
     
@@ -109,8 +118,18 @@ open class PDF
     // Text
     
     public func fitTextLine (text:String, len:Int32 = 0, x:Double, y:Double, options:String = "") throws {
+//        var txt:String = ""
+//        if let data = text.data( using: .isoLatin1 ) {
+//            if let utf = String( data: data, encoding: .utf8 ) {
+//                txt = utf
+//            }
+//        }
+//        else {
+//            txt = text
+//        }
+        
         try pdf_try {
-            PDF_fit_textline( self.pdf, text.cString(using: .isoLatin1), len, x, y, options.cString(using: .utf8) )
+            PDF_fit_textline( self.pdf, text.cString( using: .isoLatin1 ), len, x, y, options.cString(using: .utf8) )
         }
     }
     
@@ -163,7 +182,7 @@ open class PDF
     // Images
     
     public func loadImage(imageType:String = "auto", fileName:String, len:Int32 = 0, options:String = "") throws -> Int32 {
-        let image = PDF_load_image(pdf, imageType.cString(using: .utf8), fileName.cString(using: .utf8), len, options.cString(using: .utf8))
+        let image:Int32 = -1 //PDF_load_image(pdf, imageType.cString(using: .utf8), fileName.cString(using: .utf8), len, options.cString(using: .utf8))
         
         if image == -1 { throw PDFError.error(pdf) }
         
