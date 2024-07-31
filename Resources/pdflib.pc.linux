@@ -7,5 +7,5 @@ Name: PDFLib
 Description: A C library for PDF manipulation
 Version: 9.3.1
 Cflags: -I${includedir}
-Libs: -L${libdir} -lpdf
+Libs: -L${libdir} -lpdf -lstdc++
 
