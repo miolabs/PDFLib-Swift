@@ -1,8 +1,8 @@
 import XCTest
 @testable import PDFLib_Swift
 
-final class PDFLib_SwiftTests: XCTestCase {
-        
+final class PDFLib_SwiftTests: XCTestCase 
+{
     var searchPath:String { get {
         let testBundle = Bundle(for: type(of: self))
         let searchPath = testBundle.bundlePath.appending("/Contents/Resources/PDFLib-Swift_PDFLib-SwiftTests.bundle/Contents/Resources/Resources/")
@@ -16,9 +16,11 @@ final class PDFLib_SwiftTests: XCTestCase {
         print("Executing at: \(FileManager().currentDirectoryPath)")
         
         let pdf = PDF()
-                
-//        pdf.setOptions("SearchPath={{\(searchPath)}}")
+        #if PDFLIB_7
         pdf.setParameter(key: "SearchPath", value: searchPath)
+        #else
+        pdf.setOption( options: "SearchPath={{\(searchPath)}}" )
+        #endif
         
         try pdf.beginDocument( fileName: "starter_basic.pdf" )
         
@@ -92,9 +94,12 @@ final class PDFLib_SwiftTests: XCTestCase {
         print("Executing at: \(FileManager().currentDirectoryPath)")
         
         let pdf = PDF()
-                
-//        pdf.setOptions( "SearchPath={{\(searchPath)}}" )
+        #if PDFLIB_7
         pdf.setParameter(key: "SearchPath", value: searchPath)
+        #else
+        pdf.setOption( options: "SearchPath={{\(searchPath)}}" )
+        #endif
+        
         
         try pdf.beginDocument( fileName: "starter_table.pdf" )
         
@@ -234,14 +239,17 @@ final class PDFLib_SwiftTests: XCTestCase {
         pdf.endDocument()
     }
     
-    func testFontMetrics() throws {
- 
+    func testFontMetrics() throws 
+    {
         print("Executing at: \(FileManager().currentDirectoryPath)")
         
         let pdf = PDF()
                 
-//        pdf.setOptions( "SearchPath={{\(searchPath)}}" )
+        #if PDFLIB_7
         pdf.setParameter(key: "SearchPath", value: searchPath)
+        #else
+        pdf.setOption( options: "SearchPath={{\(searchPath)}}" )
+        #endif
         
         try pdf.beginDocument( fileName: "font_metrics_info.pdf" )
         
@@ -264,6 +272,75 @@ final class PDFLib_SwiftTests: XCTestCase {
         pdf.setFont(font, size: 10)
         
         let text = "ABCdefghij"
+        let x:Double = 150
+        var y:Double = 140
+        
+        try pdf.fitTextLine(text: "capheight for font size 10: " + String(format: "%.2f", capheight), x: x, y: y, options: "alignchar :")
+                             
+        var optlist = "matchbox={fillcolor={rgb 1 0.8 0.8} boxheight={capheight none}}"
+        try pdf.fitTextLine( text: text, x: x + 60, y: y, options: optlist)
+
+        y -= 30
+        try pdf.fitTextLine( text: "ascender for font size 10: " + String( format: "%.2f", ascender), x: x, y: y, options: "alignchar :")
+               
+        optlist = "matchbox={fillcolor={rgb 1 0.8 0.8} boxheight={ascender none}}"
+        try pdf.fitTextLine( text: text, x: x + 60, y: y, options: optlist)
+
+        y -= 30
+        try pdf.fitTextLine( text: "descender for font size 10: " + String( format:"%.2f", descender), x: x, y: y, options: "alignchar :")
+        
+        optlist = "matchbox={fillcolor={rgb 1 0.8 0.8} boxheight={none descender}}"
+        try pdf.fitTextLine( text: text, x: x + 60, y: y, options: optlist)
+
+        y -= 30
+        try pdf.fitTextLine( text: "xheight for font size 10: " + String( format: "%.1f", xheight), x: x, y: y, options: "alignchar :")
+        
+        optlist = "matchbox={fillcolor={rgb 1 0.8 0.8} boxheight={xheight none}}"
+        try pdf.fitTextLine( text: text, x: x + 60, y: y, options: optlist)
+
+        y -= 30
+        let width = pdf.stringWidth(text, font: font, size: 10)
+        try pdf.fitTextLine( text: "width for font size 10: " + String( format: "%.1f", width), x: x, y: y, options: "alignchar :")
+
+        
+        /* Finish page */
+        pdf.endPage()
+        pdf.endDocument()
+    }
+    
+    func testUTF8Symbols() throws
+    {
+        print("Executing at: \(FileManager().currentDirectoryPath)")
+        
+        let pdf = PDF()
+                
+        #if PDFLIB_7
+        pdf.setParameter(key: "SearchPath", value: searchPath)
+        #else
+        pdf.setOption( options: "SearchPath={{\(searchPath)}}" )
+        #endif
+        
+        try pdf.beginDocument( fileName: "utf8_symbols.pdf" )
+        
+        pdf.setInfo( key: "Creator", value: "PDFlib Cookbook" )
+        pdf.setInfo( key: "Title",  value: "UTF8 SYMBOLS" )
+        
+        /* Start page */
+        pdf.beginPage(options: "width=300 height=200")
+        let font = try pdf.loadFont(name: "NotoSerif-Regular", encoding: "winansi", options: "embedding")
+
+        
+        /* Retrieve the font metrics for a font size of 10. If no fontsize
+         * is supplied the metrics will be based on a font size of 1000.
+         */
+        let capheight  = pdf.infoFont( font, keyword: "capheight", options: "fontsize=10" )
+        let ascender   = pdf.infoFont( font, keyword: "ascender", options: "fontsize=10" )
+        let descender  = pdf.infoFont( font, keyword: "descender", options: "fontsize=10" )
+        let xheight    = pdf.infoFont( font, keyword: "xheight", options: "fontsize=10" )
+
+        pdf.setFont(font, size: 10)
+        
+        let text = "$€"
         let x:Double = 150
         var y:Double = 140
         

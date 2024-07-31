@@ -28,7 +28,12 @@ open class PDF
     public init() {
         pdf = PDF_new()
 #if !PDFLIB_7
-        setOption("license=LA00102-010543-802750-K2VM2E-4MT9MH")
+        if let value = getenv("PDFLIB_LICENSE") {
+            if let license = String( utf8String: value ) {
+                setOption( options: "license=\(license)" )
+            }
+        }
+        setOption(options: "stringformat=utf8")
 #endif
     }
     
@@ -66,7 +71,7 @@ open class PDF
     
     // Fonts
     
-    public func loadFont(name:String, len:Int32 = 0, encoding:String, options:String = "") throws -> Int32 {
+    public func loadFont(name:String, len:Int32 = 0, encoding:String = "unicode", options:String = "") throws -> Int32 {
         let font = PDF_load_font(pdf, name.cString(using: .utf8), len, encoding.cString(using: .utf8), options.cString(using: .utf8))
         
         if font == -1 { throw PDFError.error(pdf) }
@@ -132,12 +137,20 @@ open class PDF
 //        }
         
         try pdf_try {
+            #if PDFLIB_7
             PDF_fit_textline( self.pdf, text.cString( using: .isoLatin1 ), len, x, y, options.cString(using: .utf8) )
+            #else
+            PDF_fit_textline( self.pdf, text.cString( using: .utf8 ), len, x, y, options.cString(using: .utf8) )
+            #endif
         }
     }
     
     public func addTextFlow(textFlow:Int32, text:String, len:Int32 = 0, options:String = "") throws -> Int32 {
+        #if PDFLIB_7
         let tf = PDF_add_textflow(pdf, textFlow, text.cString(using: .isoLatin1), len, options.cString(using: .utf8))
+        #else
+        let tf = PDF_add_textflow(pdf, textFlow, text.cString(using: .utf8), len, options.cString(using: .utf8))
+        #endif
         if tf == -1 { throw PDFError.error(pdf) }
         return tf
     }

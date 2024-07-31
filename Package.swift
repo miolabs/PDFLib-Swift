@@ -29,8 +29,8 @@ let package = Package(
         ),
         .target(
             name: "PDFLib-Swift",
-            dependencies: ["CPDFLib", "MIOCore"],
-            swiftSettings: [.define("PDFLIB_7")]
+            dependencies: ["CPDFLib", "MIOCore"]
+//            swiftSettings: [.define("PDFLIB_7")]
         ),
         .testTarget(
             name: "PDFLib-SwiftTests",
