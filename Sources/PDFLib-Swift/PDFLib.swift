@@ -27,6 +27,9 @@ open class PDF
     
     public init() {
         pdf = PDF_new()
+#if !PDFLIB_7
+        setOption("license=LA00102-010543-802750-K2VM2E-4MT9MH")
+#endif
     }
     
     deinit {
