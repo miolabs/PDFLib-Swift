@@ -193,41 +193,8 @@ open class PDF
     
     public func stroke () {
         PDF_stroke(pdf)
-    }
-    
-    // Images
-    
-    public func loadImage(imageType:String = "auto", fileName:String, len:Int32 = 0, options:String = "") throws -> Int32 {
-        let image:Int32 = -1 //PDF_load_image(pdf, imageType.cString(using: .utf8), fileName.cString(using: .utf8), len, options.cString(using: .utf8))
+    }    
         
-        if image == -1 { throw PDFError.error(pdf) }
-        
-        return image
-        
-    }
-        
-    public func fitImage(image:Int32, x:Double = 0, y: Double = 0, options:String = "") {
-        PDF_fit_image(pdf, image, x, y, options.cString(using: .utf8))
-    }
-    
-    public func closeImage(image:Int32) {
-        PDF_close_image( pdf, image )
-    }
-    
-    // Virtual FS
-        
-    public func createPVF( filename:String, data:Data ) {
-        var bytes = [UInt8](repeating: 0, count: data.count)
-        data.copyBytes(to: &bytes, count: data.count)
-        
-        PDF_create_pvf( pdf, filename.cString(using: .utf8), 0, &bytes, data.count, "")
-    }
-    
-    public func deletePVF( filename:String ) {
-        PDF_delete_pvf( pdf, filename.cString(using: .utf8), 0 )
-    }
-
-    
     // Tables
     
     public func fitTable(table:Int32, llx:Double, lly:Double, urx:Double, ury:Double, options:String = "") throws -> String {
