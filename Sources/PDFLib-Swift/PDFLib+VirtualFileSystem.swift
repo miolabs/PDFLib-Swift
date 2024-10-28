@@ -10,10 +10,9 @@ import CPDFLib
 extension PDF
 {
     public func createPVF( filename:String, data:Data ) {
-        var bytes = [UInt8](repeating: 0, count: data.count)
-        data.copyBytes(to: &bytes, count: data.count)
-        
-        PDF_create_pvf( pdf, filename.cString(using: .utf8), 0, &bytes, bytes.count, "")
+        data.withUnsafeBytes { buffer in
+            PDF_create_pvf( pdf, filename.cString(using: .utf8), 0, buffer, data.count, "")
+        }
     }
     
     public func deletePVF( filename:String ) {
