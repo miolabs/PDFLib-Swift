@@ -29,8 +29,14 @@ let package = Package(
         ),
         .target(
             name: "PDFLib-Swift",
-            dependencies: ["CPDFLib", "MIOCore"]
+            dependencies: ["CPDFLib", "MIOCore"],
 //            swiftSettings: [.define("PDFLIB_7")]
+            linkerSettings: [
+                .linkedFramework("CoreText",            .when(platforms: [.macOS])),
+                .linkedFramework("CoreGraphics",        .when(platforms: [.macOS])),
+                .linkedFramework("CoreServices",        .when(platforms: [.macOS])),
+                .linkedFramework("SystemConfiguration", .when(platforms: [.macOS]))
+            ]
         ),
         .testTarget(
             name: "PDFLib-SwiftTests",
