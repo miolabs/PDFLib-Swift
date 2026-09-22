@@ -22,6 +22,18 @@ bool
 PDF_CHECK_CATCH(PDF *p) {
     return p && pdf_catch(p);
 }
+
+/* pCOS entry points are C variadic (printf-style path); Swift cannot call those, so
+   pass the path through "%s". */
+static inline double
+PDF_PCOS_NUMBER(PDF *p, int doc, const char *path) {
+    return PDF_pcos_get_number(p, doc, "%s", path);
+}
+
+static inline const char *
+PDF_PCOS_STRING(PDF *p, int doc, const char *path) {
+    return PDF_pcos_get_string(p, doc, "%s", path);
+}
     
     
     

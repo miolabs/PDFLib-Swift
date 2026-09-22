@@ -1,0 +1,23 @@
+{
+  "pins" : [
+    {
+      "identity" : "miocore",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/miolabs/MIOCore",
+      "state" : {
+        "revision" : "936ab45b458d4751ab9b99304973b11ba0b75005",
+        "version" : "2.0.4"
+      }
+    },
+    {
+      "identity" : "swift-log",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-log.git",
+      "state" : {
+        "revision" : "9c6fb14227f55d8f711ce3847dc2f419fb0ecacb",
+        "version" : "1.15.1"
+      }
+    }
+  ],
+  "version" : 2
+}
