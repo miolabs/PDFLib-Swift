@@ -13,12 +13,14 @@
 
 typedef void (BLOCK) (void);
 
-bool
+/* static: defined in a header, so every Swift file that reaches them gets its own copy.
+   With external linkage an optimised build links the same symbol once per file. */
+static inline bool
 PDF_CHECK_TRY(PDF *p) {
     return p && (setjmp(pdf_jbuf(p)->jbuf) == 0);
 }
 
-bool
+static inline bool
 PDF_CHECK_CATCH(PDF *p) {
     return p && pdf_catch(p);
 }
